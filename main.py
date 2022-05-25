@@ -12,7 +12,7 @@ bot = commands.Bot(intents=intents, command_prefix="!")
 
 
 @bot.command(name='add_group')
-async def members(ctx):
+async def members(ctx: discord.context):
     users = []
     for guild in bot.guilds:
         for member in guild.members:
@@ -23,12 +23,12 @@ async def members(ctx):
 
     await ctx.send("What is your team name ?")
     try:
-        reply_message = await bot.wait_for('message', timeout=15.0)
+        cat_name = await bot.wait_for('message', timeout=15.0)
     except asyncio.TimeoutError:
         await ctx.channel.send('You ran out of time to answer!')
     # await print(reply_message)
 
-    await ctx.channel.send(f'Your name of team is **{reply_message.content}**')
+    await ctx.channel.send(f'Your name of team is **{cat_name.content}**')
 
     class Choose(discord.ui.View):
         @discord.ui.select(
@@ -40,10 +40,15 @@ async def members(ctx):
         async def select_callback(self, select, interaction):
             await interaction.response.send_message(
                 f"{select2string(select)} are your teammates. A category and a channel will be create")
-            await interaction.response.send_message()
 
     await ctx.send("Choose your teammate(s)", view=Choose())
-
+    await ctx.guild.create_category(cat_name.content)
+    # TODO : create some channels
+    # TODO : create the role
+    # await ctx.guild.create_role(name="role name")
+    # TODO : Add persons on the role
+    # TODO : refacto the code in classes
+    # TODO : Docker to be run everywhere
     return users
 
 
